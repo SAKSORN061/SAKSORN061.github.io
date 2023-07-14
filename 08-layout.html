@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>08-JS-LAYOUT BY SAKSORN</title>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+        <!-- Blocking JavaScript -->
+
+        <script>
+            $(function () {
+                $("head").load("08-head.html");
+                $("#header").load("08-header.html");
+                $("#footer").load("08-footer.html");
+            });
+        </script>
+
+        <script>
+        let row
+        let cell
+        let ed = 0
+        let array_fname = []
+        let array_phone = []
+        let array_email = []
+
+        if (localStorage.getItem('fname') != null &&
+            localStorage.getItem('phone') != null &&
+            localStorage.getItem('email') != null) {
+            
+                array_fname = JSON.parse(localStorage.getItem('fname'))
+                array_phone = JSON.parse(localStorage.getItem('phone'))
+                array_email = JSON.parse(localStorage.getItem('email'))
+        }
+        </script>
+</head>
+<body onload="load_data()">
+    
+    <section class="hero is-danger is-fullheight">
+        <!-- Hero head: will stick at the top -->
+
+        <div id="header"></div>
+        <!-- Hero content: will be in the middle -->
+        <div class="hero-body has-background-danger-dark">
+          <div class="container has-text-centered">
+            <div class="columns is-centered mx-auto">
+                <div class="column">
+            <div class="card has-background-danger">
+                <div class="card-content">
+                  <div class="content">
+
+                    <button class="button is-rounded is-success mb-5" onclick="insert_data()">insert data</button>
+
+                    <table id="tb1" class="table">
+                        <Thead>
+                            <tr>
+                                <th>FNAME</th>
+                                <th>PHONE</th>
+                                <th>EMAIL</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </Thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+
+                  </div>
+                </div>
+              </div>
+              </div>
+              
+        </div>
+    </div>
+    </div>
+      
+
+
+        <!-- Hero footer: will stick at the bottom -->
+        <div id="footer"></div>
+      </section>
+
+      <script>
+        let tb1 = document.getElementById('tb1').getElementsByTagName('tbody')[0]
+
+        function load_data() {
+            for (let i = 0; i < array_fname.length; i++){
+            // console.log(array_fname[i])
+            // console.log(array_phone[i])
+            // console.log(array_email[i])
+            row = tb1.insertRow()
+            cell = row.insertCell()
+            cell.innerHTML = array_fname[i]
+            cell = row.insertCell()
+            cell.innerHTML = array_phone[i]
+            cell = row.insertCell()
+            cell.innerHTML = array_email[i] 
+            cell = row.insertCell()
+            cell.innerHTML = '<button class="button is-rounded is-warning" onclick="edit_data(' + i + ')">EDIT</button>'            
+            cell = row.insertCell()
+            cell.innerHTML = '<button class="button is-rounded is-danger" onclick="delete_data(' + i + ')">DELETE</button>'
+         }
+        }
+
+        function insert_data() {
+            if(ed == 0){
+                ed = 1
+            row = tb1.insertRow()
+            cell = row.insertCell()
+            cell.innerHTML = '<input class="input" type="text" placeholder="Input Full Name" id="fname">'
+            cell = row.insertCell()
+            cell.innerHTML = '<input class="input" type="text" placeholder="Input Phone Number" id="phone">'
+            cell = row.insertCell()
+            cell.innerHTML = '<input class="input" type="text" placeholder="Input Email" id="email">'
+            cell = row.insertCell()
+            cell.innerHTML = '<button class="button is-rounded is-success" onclick="save_data()">SAVE</button>'            
+            cell = row.insertCell()
+            cell.innerHTML = '<button class="button is-rounded is-danger" onclick="cancel_insert()">CANCEL</button>'
+        }
+    }
+
+        function cancel_insert() {
+            row = tb1.deleteRow(tb1.rows.length - 1)
+            ed = 0
+            //row = tb1.deleteRow()
+        }
+
+        function save_data() {
+
+            if (document.getElementById('fname').value != '' && 
+                document.getElementById('phone').value != '' &&
+                document.getElementById('email').value != ''){
+
+                array_fname.push(document.getElementById('fname').value)
+                array_phone.push(document.getElementById('phone').value)
+                array_email.push(document.getElementById('email').value)
+
+                localStorage.setItem('fname', JSON.stringify(array_fname))
+                localStorage.setItem('phone', JSON.stringify(array_phone))
+                localStorage.setItem('email', JSON.stringify(array_email))
+
+                document.getElementById('fname').value = ''
+                document.getElementById('phone').value = ''
+                document.getElementById('email').value = ''
+                
+                tb1.innerHTML = ''
+                ed = 0
+                load_data()
+
+            }else{
+                window.alert('P L E A S E -- E N T E R -- A L L -- I N F O R M A T I O N ')
+            }            
+        }
+
+        function delete_data(i) {
+            if (confirm('D E L E T E  D A T A')) {
+                array_fname.splice(i, 1)
+                array_phone.splice(i, 1)
+                array_email.splice(i, 1)
+            }
+            // console.log(i)
+            // console.log(array_fname)
+            // console.log(array_fname)
+
+            localStorage.setItem('fname', JSON.stringify(array_fname))
+            localStorage.setItem('phone', JSON.stringify(array_phone))
+            localStorage.setItem('email', JSON.stringify(array_email))
+
+            tb1.innerHTML = ''
+
+            load_data()
+        }
+
+        function edit_data(i) {
+            if (ed == 0) {
+                ed = 1
+                tb1.rows[i].cells[0].innerHTML = '<input class="input" type="text" placeholder="Input Full Name" id="fname" value="' + array_fname[i] + '">'
+                tb1.rows[i].cells[1].innerHTML = '<input class="input" type="text" placeholder="Input Phone Number" id="phone" value="' + array_phone[i] + '">'
+                tb1.rows[i].cells[2].innerHTML = '<input class="input" type="text" placeholder="Input Email" id="email" value="' + array_email[i] + '">'
+                tb1.rows[i].cells[3].innerHTML = '<button class="button is-rounded is-success" onclick="save_edit(' + i + ')">SAVE</button>'    
+                tb1.rows[i].cells[4].innerHTML = '<button class="button is-rounded is-danger" onclick="cancel_edit()">CANCEL</button>'
+
+                console.log(tb1.rows[0].cells[0])
+            }
+        }
+
+        function cancel_edit() {
+            tb1.innerHTML = ''
+            load_data()
+            ed = 0
+        }
+
+        function save_edit(i) {
+            array_fname[i] = document.getElementById('fname').value
+            array_phone[i] = document.getElementById('phone').value
+            array_email[i] = document.getElementById('email').value
+
+            // console.log(array_fname)
+
+            localStorage.setItem('fname', JSON.stringify(array_fname))
+            localStorage.setItem('phone', JSON.stringify(array_phone))
+            localStorage.setItem('email', JSON.stringify(array_email))
+
+            tb1.innerHTML = ''
+            load_data()
+
+            ed = 0
+        }
+      </script>
+</body>
+</html>
